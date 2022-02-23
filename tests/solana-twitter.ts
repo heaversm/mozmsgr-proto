@@ -2,6 +2,7 @@ import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
 import { SolanaTwitter } from "../target/types/solana_twitter";
 import * as assert from "assert";
+import * as bs58 from "bs58";
 
 describe("solana-twitter", () => {
   // Configure the client to use the local cluster.
@@ -145,6 +146,55 @@ describe("solana-twitter", () => {
 
     assert.fail(
       "The instruction should have failed with a 281-character content."
+    );
+  });
+
+  it("can fetch all tweets", async () => {
+    const tweetAccounts = await program.account.tweet.all();
+    assert.equal(tweetAccounts.length, 3); //the previous tests create 3 tweets - check to make sure
+  });
+
+  it("can filter tweets by author", async () => {
+    const authorPublicKey = program.provider.wallet.publicKey;
+    const tweetAccounts = await program.account.tweet.all([
+      {
+        memcmp: {
+          offset: 8, // Discriminator takes up first 8 bytes.
+          bytes: authorPublicKey.toBase58(), //next 58 bytes are an author's public key
+        },
+      },
+    ]);
+
+    assert.equal(tweetAccounts.length, 2); //only 2 accounts should come back since only 2 are from our wallet
+    assert.ok(
+      tweetAccounts.every((tweetAccount) => {
+        return (
+          tweetAccount.account.author.toBase58() === authorPublicKey.toBase58() //make sure that the tweet accounts match our public key just in case
+        );
+      })
+    );
+  });
+
+  it("can filter tweets by topics", async () => {
+    const tweetAccounts = await program.account.tweet.all([
+      {
+        memcmp: {
+          //find the byte in each tweet at which the topic begins
+          offset:
+            8 + // Discriminator.
+            32 + // Author public key.
+            8 + // Timestamp.
+            4, // Topic string prefix.
+          bytes: bs58.encode(Buffer.from("veganism")), //search for this topic
+        },
+      },
+    ]);
+
+    assert.equal(tweetAccounts.length, 2);
+    assert.ok(
+      tweetAccounts.every((tweetAccount) => {
+        return tweetAccount.account.topic === "veganism";
+      })
     );
   });
 });
