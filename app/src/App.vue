@@ -4,6 +4,7 @@ import TheSidebar from './components/TheSidebar'
 
 import { PhantomWalletAdapter, SolflareWalletAdapter } from '@solana/wallet-adapter-wallets'
 import { initWallet } from 'solana-wallets-vue'
+import { initWorkspace } from '@/composables'
 
 const route = useRoute()
 
@@ -12,7 +13,8 @@ const wallets = [
     new SolflareWalletAdapter(),
 ]
 
-initWallet({ wallets, autoConnect: true })
+initWallet({ wallets, autoConnect: true }) //the workspace will need the wallet
+initWorkspace() 
 </script>
 
 <template>
