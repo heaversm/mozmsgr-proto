@@ -1,0 +1,15 @@
+[features]
+seeds = false
+[programs.localnet]
+solana_twitter = "2gBxzk957ujqfpBCJ8S9PdJZ3WutME85hjL1cUGrma1d"
+
+[registry]
+url = "https://anchor.projectserum.com"
+
+[provider]
+cluster = "localnet"
+wallet = "/Users/mheavers/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+custom-script = "echo 'Anchor custom script run successfully'"
