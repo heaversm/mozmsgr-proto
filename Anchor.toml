@@ -3,13 +3,24 @@ seeds = false
 [programs.localnet]
 solana_twitter = "2gBxzk957ujqfpBCJ8S9PdJZ3WutME85hjL1cUGrma1d"
 
+[programs.devnet]
+solana_twitter = "2gBxzk957ujqfpBCJ8S9PdJZ3WutME85hjL1cUGrma1d"
+
+# TODO: Should use different keypair IDs for each environment
+[programs.mainnet]
+solana_twitter = "2gBxzk957ujqfpBCJ8S9PdJZ3WutME85hjL1cUGrma1d"
+
+
 [registry]
 url = "https://anchor.projectserum.com"
 
+# change provider whenever you run `solana config set --url [devnet]`
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "/Users/mheavers/.config/solana/id.json"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
+# add a script to copy our IDL path so devnet can access. Execute with `anchor run copy-idl`
+copy-idl = "mkdir -p app/src/idl && cp target/idl/solana_twitter.json app/src/idl/solana_twitter.json && echo 'idl copied successfully'"
 custom-script = "echo 'Anchor custom script run successfully'"
