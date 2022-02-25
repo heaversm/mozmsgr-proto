@@ -13,14 +13,18 @@ describe("solana-twitter", () => {
   it("can send a new tweet", async () => {
     // Before sending the transaction to the blockchain.
     const tweet = anchor.web3.Keypair.generate(); //generate an account from which to send the tweet
-    await program.rpc.sendTweet("veganism", "Hummus, am I right?", {
-      accounts: {
-        tweet: tweet.publicKey,
-        author: program.provider.wallet.publicKey,
-        systemProgram: anchor.web3.SystemProgram.programId,
-      },
-      signers: [tweet],
-    });
+    await program.rpc.sendTweet(
+      "solana",
+      "How much does each message cost to send?",
+      {
+        accounts: {
+          tweet: tweet.publicKey,
+          author: program.provider.wallet.publicKey,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        },
+        signers: [tweet],
+      }
+    );
 
     // After sending the transaction to the blockchain.
     // Fetch the account details of the created tweet.
@@ -31,15 +35,18 @@ describe("solana-twitter", () => {
       tweetAccount.author.toBase58(),
       program.provider.wallet.publicKey.toBase58() //your wallet address is the base58 format of your public key on Solana - these need to be converted to compare author to wallet
     );
-    assert.equal(tweetAccount.topic, "veganism");
-    assert.equal(tweetAccount.content, "Hummus, am I right?");
+    assert.equal(tweetAccount.topic, "solana");
+    assert.equal(
+      tweetAccount.content,
+      "How much does each message cost to send?"
+    );
     assert.ok(tweetAccount.timestamp);
   });
 
   it("can send a new tweet without a topic", async () => {
     // Before sending the transaction to the blockchain.
     const tweet = anchor.web3.Keypair.generate(); //generate an account from which to send the tweet
-    await program.rpc.sendTweet("", "gm", {
+    await program.rpc.sendTweet("", "Howdy", {
       accounts: {
         tweet: tweet.publicKey,
         author: program.provider.wallet.publicKey,
@@ -77,14 +84,18 @@ describe("solana-twitter", () => {
 
     // Call the "SendTweet" instruction on behalf of this other user.
     const tweet = anchor.web3.Keypair.generate();
-    await program.rpc.sendTweet("veganism", "Yay Tofu!", {
-      accounts: {
-        tweet: tweet.publicKey,
-        author: otherUser.publicKey,
-        systemProgram: anchor.web3.SystemProgram.programId,
-      },
-      signers: [otherUser, tweet],
-    });
+    await program.rpc.sendTweet(
+      "decentralization",
+      "These messages are not stored on a central server",
+      {
+        accounts: {
+          tweet: tweet.publicKey,
+          author: otherUser.publicKey,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        },
+        signers: [otherUser, tweet],
+      }
+    );
 
     // Fetch the account details of the created tweet.
     const tweetAccount = await program.account.tweet.fetch(tweet.publicKey);
@@ -94,8 +105,11 @@ describe("solana-twitter", () => {
       tweetAccount.author.toBase58(),
       otherUser.publicKey.toBase58()
     );
-    assert.equal(tweetAccount.topic, "veganism");
-    assert.equal(tweetAccount.content, "Yay Tofu!");
+    assert.equal(tweetAccount.topic, "decentralization");
+    assert.equal(
+      tweetAccount.content,
+      "These messages are not stored on a central server"
+    );
     assert.ok(tweetAccount.timestamp);
   });
 
@@ -103,7 +117,7 @@ describe("solana-twitter", () => {
     try {
       const tweet = anchor.web3.Keypair.generate();
       const topicWith51Chars = "x".repeat(51);
-      await program.rpc.sendTweet(topicWith51Chars, "Hummus, am I right?", {
+      await program.rpc.sendTweet(topicWith51Chars, "Testing lengthy topic", {
         accounts: {
           tweet: tweet.publicKey,
           author: program.provider.wallet.publicKey,
@@ -128,7 +142,7 @@ describe("solana-twitter", () => {
     try {
       const tweet = anchor.web3.Keypair.generate();
       const contentWith281Chars = "x".repeat(281);
-      await program.rpc.sendTweet("veganism", contentWith281Chars, {
+      await program.rpc.sendTweet("web3", contentWith281Chars, {
         accounts: {
           tweet: tweet.publicKey,
           author: program.provider.wallet.publicKey,
@@ -185,7 +199,7 @@ describe("solana-twitter", () => {
             32 + // Author public key.
             8 + // Timestamp.
             4, // Topic string prefix.
-          bytes: bs58.encode(Buffer.from("veganism")), //search for this topic
+          bytes: bs58.encode(Buffer.from("decentralization")), //search for this topic
         },
       },
     ]);
@@ -193,7 +207,7 @@ describe("solana-twitter", () => {
     assert.equal(tweetAccounts.length, 2);
     assert.ok(
       tweetAccounts.every((tweetAccount) => {
-        return tweetAccount.account.topic === "veganism";
+        return tweetAccount.account.topic === "decentralization";
       })
     );
   });
