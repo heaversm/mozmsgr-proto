@@ -14,10 +14,10 @@ solana_twitter = "2gBxzk957ujqfpBCJ8S9PdJZ3WutME85hjL1cUGrma1d"
 [registry]
 url = "https://anchor.projectserum.com"
 
-# change provider whenever you run `solana config set --url [devnet]`
+# TODO: change provider whenever you run `solana config set --url [devnet]`
 # options are devnet localnet mainnet
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "/Users/mheavers/.config/solana/id.json"
 
 [scripts]

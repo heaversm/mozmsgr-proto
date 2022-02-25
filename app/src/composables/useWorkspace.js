@@ -17,6 +17,7 @@ export const initWorkspace = () => {
   const wallet = useAnchorWallet();
 
   //const connection = new Connection("http://127.0.0.1:8899", commitment); //TODO: hardcode localhost for now
+  //const connection = new Connection('https://api.devnet.solana.com', commitment)
   const connection = new Connection(clusterUrl, commitment);
   const provider = computed(
     () =>
